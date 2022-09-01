@@ -7,5 +7,4 @@ streamlit
 numpy
 pandas
 geopandas
-telnetlib
 mip
