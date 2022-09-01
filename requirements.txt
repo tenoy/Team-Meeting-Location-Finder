@@ -1,0 +1,9 @@
+geopy
+pydeck
+requests
+googlemaps
+responses
+streamlit
+numpy
+pandas
+geopandas
