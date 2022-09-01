@@ -7,3 +7,6 @@ streamlit
 numpy
 pandas
 geopandas
+itertools
+telnetlib
+mip
