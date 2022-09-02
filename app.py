@@ -48,14 +48,14 @@ def calculate(start_trainstations, target_trainstations):
             data=locationmodel.best_location_df,
             get_position='[lng, lat]',
             get_color='[1, 1, 255]',
-            get_radius=20000
+            get_radius=15000
         )
         st.session_state.member_location_layer = pdk.Layer(
             'ScatterplotLayer',
             data=locationmodel.member_location_df,
             get_position='[lng, lat]',
             get_fill_color='[0, 0, 0]',
-            get_radius=20000
+            get_radius=15000
         )
 
 def extract_geom_lines(input_geom):
@@ -93,9 +93,9 @@ def main():
     
 
     st.title("Team meeting location finder")
-    st.write("This tool finds the 'best' location for a team meeting, to which each team member travels via train.")
-    st.write("By default, the 'best' location is defined to be the location where the overall travel time is minimized. You can change to minimize the maximum travel time via the radio buttons in the advanced settings tab. You can also exclude locations there.")
-    st.write("Small red dots on the map represent the set of candidate train stations. Black dots represent the start location of each team member. The blue dot represents the 'best' team meeting location. The travel time duration of each member is also given.")
+    st.write("This tool helps to find the 'best' location for a team meeting in Germany, to which each team member travels via train. Simply input the starting train stations of each team member, select a date and time for the meeting and click 'Calculate best location for team meeting!'.")
+    st.write("By default, the 'best' location is defined to be the location where the overall travel time is minimized. You can change to minimize the maximum travel for each member time via the radio buttons in the advanced settings tab. You can also exclude locations you don't like there.")
+    st.write("The red dots on the map represent the set of possible meeting locations. After calculation, a blue dot appears that represents the 'best' team meeting location. The black dots represent the starting locations of each team member. Below the map you can find the name of the best meeting location and the travel time duration of each member is also given.")
 
     start_trainstations = load_start_trainstations()
     target_trainstations = load_target_trainstations()
@@ -110,7 +110,7 @@ def main():
         with col2:
             st.time_input(label = "Time of meeting", value=datetime.time(12, 0), key="time_picker")
         with st.expander("Advanced Settings"):
-            st.radio(label="Select optimization objective", options=('Total travel time', 'Maximum travel time'), index=0, key="optimization_mode")
+            st.radio(label="Select minimization objective", options=('Total travel time', 'Maximum travel time'), index=0, key="optimization_mode", horizontal=True)
             st.write("Exclude location(s)")
             st.multiselect('Select a city / trainstation', target_trainstations , key="blacklist_location_selectbox")
         st.form_submit_button("Calculate best location for team meeting!", on_click=calculate, args=(start_trainstations, target_trainstations, ))
@@ -127,9 +127,9 @@ def main():
     deck=pdk.Deck(
      map_style='mapbox://styles/mapbox/light-v9',
      initial_view_state=pdk.ViewState(
-         latitude=51.0,
-         longitude=10,
-         zoom=5,
+         latitude=51.25,
+         longitude=10.25,
+         zoom=4.9,
          pitch=0,
      ),
      layers=[
@@ -139,7 +139,7 @@ def main():
              data=target_trainstations,
              get_position='[lng, lat]',
              get_color='[200, 30, 0, 160]',
-             get_radius=4000
+             get_radius=7500
          ),
         #  pdk.Layer(
         #      'PathLayer',
@@ -159,6 +159,8 @@ def main():
     st.pydeck_chart(pydeck_obj=deck, use_container_width=False)
     st.write('Best location: ', st.session_state.best_location_name)
     st.dataframe(data=st.session_state.travel_times_to_best_location_df)
+    st.caption('The travel times used for optimization and display are real time values from the Google Distance Matrix API. Due to the restricted monthly query budget of this demo, a calculation may not always be possible.')
+    
 
 
     
