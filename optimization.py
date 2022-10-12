@@ -11,16 +11,19 @@ class LocationModel:
     #df = ""
     # Prepares data for optimization
     # start_trainstations is the set of all possible starting trainstations (about 6,5k) from which team members might start
-    # target_trainstations is the set of all possible trainstations, where the team might meet (about 20)
+    # preset_target_trainstations is the default set of possible trainstations, where the team might meet (about 20)
     # member_locations the actual selection of team member starting locations
-    # blacklist_locations target trainstations, that are excluded from optimization
+    # excluded_locations target trainstations, that are excluded from optimization
     # arrival_date date with the date of the team meeting
     # arrival_time datetime with latest time of arrival to the team meeting
-    def __init__(self, start_trainstations, target_trainstations, member_locations, blacklist_locations, arrival_date, arrival_time, optimization_mode, google_api_key):
+    def __init__(self, start_trainstations, preset_target_trainstations, member_locations, input_target_trainstations, excluded_locations, arrival_date, arrival_time, optimization_mode, google_api_key):
         print("init")
         self.google_api_key = google_api_key
         self.start_trainstations = start_trainstations
-        self.target_trainstations = target_trainstations
+        if (len(input_target_trainstations) > 1):
+            self.target_trainstations = self.start_trainstations[self.start_trainstations['NAME'].isin(input_target_trainstations)]
+        else:
+            self.target_trainstations = preset_target_trainstations
         self.arrival_date = arrival_date
         self.arrival_time = arrival_time
         self.optimization_mode = optimization_mode
@@ -39,7 +42,7 @@ class LocationModel:
         #index from iterrows starts at 0 and the first trainstation starts at row 2 in the data frame
         for index, row in self.start_trainstations.iterrows():
             self.names[index] = row["NAME"] #for overview
-            if (row["NAME"] not in blacklist_locations):
+            if (row["NAME"] not in excluded_locations):
                 if (row["NAME"] in self.target_trainstations["NAME"].tolist()):
                     self.facilities.append(index)
                     self.facility_positions[index] = (row["lng"], row["lat"])
