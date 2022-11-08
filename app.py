@@ -144,10 +144,8 @@ def main():
     target_trainstations = load_target_trainstations()
 
     with st.form('calc_location_form'):
-        st.write('Add starting locations')
-        st.multiselect('Select a trainstation', start_trainstations , key='member_location_selectbox')
-        st.write('Add meeting location candidates (optional)')
-        st.multiselect('Select a trainstation', start_trainstations, key='target_locations_selectbox')
+        st.multiselect('Select starting locations', start_trainstations , key='member_location_selectbox')
+        st.multiselect('Select meeting location candidates (optional)', start_trainstations, key='target_locations_selectbox')
         st.caption('If left empty, default meeting location candidates are used.')
         col1, col2 = st.columns(2)
         with col1:
@@ -157,7 +155,7 @@ def main():
             st.time_input(label = 'Time of meeting', value=datetime.time(12, 0), key='time_picker')
         with st.expander('Advanced Settings'):
             st.radio(label='Select objective', options=('Minimize total travel time', 'Minimize maximum travel time'), index=0, key='optimization_mode', horizontal=True)
-            st.write('Exclude locations from preset meeting locations')
+            st.write('Exclude locations from default meeting locations')
             st.multiselect('Select a trainstation', target_trainstations , key='blocklist_location_selectbox')
             st.caption('The exclusions are ignored if meeting location candidates are selected')
         st.form_submit_button('Calculate best location for team meeting!', on_click=calculate, args=(start_trainstations, target_trainstations, ))
